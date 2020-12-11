@@ -10,7 +10,14 @@
 
 #include "main.h"
 
-void LCD_cmd(u8 cmd);
+#define LCD_E 2
+#define LCD_curzor 1
+#define LCD_blink 0
 
+void LCD_cmd(u8 cmd);
+void LCD_enable(void);
+void LCD_data(u8 data);
+void LCD_init(bool curzor, bool blink);
+void LCD_string(char *str);
 
 #endif /* LCD_H_ */

@@ -32,11 +32,14 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <inttypes.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+typedef uint8_t u8;
+typedef uint16_t u16;
 
 /* USER CODE END ET */
 
@@ -76,6 +79,18 @@ void Error_Handler(void);
 #define led_6_GPIO_Port GPIOA
 #define led_IT_Pin GPIO_PIN_8
 #define led_IT_GPIO_Port GPIOA
+#define LCD_RS_Pin GPIO_PIN_15
+#define LCD_RS_GPIO_Port GPIOA
+#define LCD_E_Pin GPIO_PIN_3
+#define LCD_E_GPIO_Port GPIOB
+#define LCD_DATA_4_Pin GPIO_PIN_4
+#define LCD_DATA_4_GPIO_Port GPIOB
+#define LCD_DATA_5_Pin GPIO_PIN_5
+#define LCD_DATA_5_GPIO_Port GPIOB
+#define LCD_DATA_6_Pin GPIO_PIN_6
+#define LCD_DATA_6_GPIO_Port GPIOB
+#define LCD_DATA_7_Pin GPIO_PIN_7
+#define LCD_DATA_7_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

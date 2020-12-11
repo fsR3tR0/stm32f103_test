@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "lcd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,15 +100,20 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
   HAL_TIM_Base_Start_IT(&htim2);
+  LCD_init(1,1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   __HAL_TIM_SetCompare(&htim1,TIM_CHANNEL_4,100);
+  LCD_string("Helo");
+  HAL_Delay(2000);
+  LCD_cmd(0x01);
   while (1)
   {
 	  //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, SET);
 
+	  LCD_string("Mehet");
 	  HAL_GPIO_TogglePin(led_0_GPIO_Port,led_0_Pin);
 	  HAL_GPIO_WritePin(led_1_GPIO_Port,led_1_Pin, SET);
 	  __HAL_TIM_SetCompare(&htim1,TIM_CHANNEL_4,80);
@@ -362,11 +367,11 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, led_1_Pin|led_2_Pin|led_3_Pin|led_4_Pin 
-                          |led_5_Pin|led_6_Pin|led_IT_Pin|GPIO_PIN_15, GPIO_PIN_RESET);
+                          |led_5_Pin|led_6_Pin|led_IT_Pin|LCD_RS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6 
-                          |GPIO_PIN_7, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LCD_E_Pin|LCD_DATA_4_Pin|LCD_DATA_5_Pin|LCD_DATA_6_Pin 
+                          |LCD_DATA_7_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : led_0_Pin */
   GPIO_InitStruct.Pin = led_0_Pin;
@@ -376,18 +381,18 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(led_0_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : led_1_Pin led_2_Pin led_3_Pin led_4_Pin 
-                           led_5_Pin led_6_Pin led_IT_Pin PA15 */
+                           led_5_Pin led_6_Pin led_IT_Pin LCD_RS_Pin */
   GPIO_InitStruct.Pin = led_1_Pin|led_2_Pin|led_3_Pin|led_4_Pin 
-                          |led_5_Pin|led_6_Pin|led_IT_Pin|GPIO_PIN_15;
+                          |led_5_Pin|led_6_Pin|led_IT_Pin|LCD_RS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB3 PB4 PB5 PB6 
-                           PB7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6 
-                          |GPIO_PIN_7;
+  /*Configure GPIO pins : LCD_E_Pin LCD_DATA_4_Pin LCD_DATA_5_Pin LCD_DATA_6_Pin 
+                           LCD_DATA_7_Pin */
+  GPIO_InitStruct.Pin = LCD_E_Pin|LCD_DATA_4_Pin|LCD_DATA_5_Pin|LCD_DATA_6_Pin 
+                          |LCD_DATA_7_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
