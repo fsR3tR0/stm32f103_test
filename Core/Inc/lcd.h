@@ -19,5 +19,6 @@ void LCD_enable(void);
 void LCD_data(u8 data);
 void LCD_init(bool curzor, bool blink);
 void LCD_string(char *str);
+void LCD_goto(u8 row, u8 col);
 
 #endif /* LCD_H_ */

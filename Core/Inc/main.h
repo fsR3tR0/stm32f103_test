@@ -34,12 +34,15 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 typedef uint8_t u8;
 typedef uint16_t u16;
+typedef uint32_t u32;
+typedef unsigned char uch;
 
 /* USER CODE END ET */
 

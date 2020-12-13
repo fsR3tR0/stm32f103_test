@@ -15,6 +15,23 @@ void LCD_string(char *str){
 	}
 }
 
+void LCD_goto(u8 row, u8 col){
+	switch(row){
+		case 0:
+			LCD_cmd(0x80);
+			for(u8 i = col; i>0; i--){
+				LCD_cmd(0x14);
+			}
+		 break;
+		case 1:
+			LCD_cmd(0xC0);
+			for(u8 i = col; i>0; i--){
+				LCD_cmd(0x14);
+			}
+		 break;
+	}
+}
+
 void LCD_enable(){
 	//need a square  signal _| |_ for LCD enable Port
 	//we need a 0-1-0 signalflow, transition
