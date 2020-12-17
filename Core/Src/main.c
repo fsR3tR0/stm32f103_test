@@ -44,7 +44,6 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
-DMA_HandleTypeDef hdma_adc1;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
@@ -63,7 +62,6 @@ static void MX_TIM1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM2_Init(void);
-static void MX_DMA_Init(void);
 static void MX_ADC2_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -81,8 +79,10 @@ static void MX_ADC2_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	u32 temp_lcd = 0;
-	u32 temp_vin = 0;
+	float temp_lcd = 0.0;
+	char str_lcd[20], str_adc[20];
+	float temp_vin = 0;
+	bool tmp_button = 0;
   /* USER CODE END 1 */
   
 
@@ -108,12 +108,12 @@ int main(void)
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   MX_TIM2_Init();
-  MX_DMA_Init();
   MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
   HAL_TIM_Base_Start_IT(&htim2);
-  HAL_ADC_Start_DMA(&hadc1, temp,3);
+  //HAL_ADC_Start_DMA(&hadc1, temp,3);
+  HAL_ADC_Start(&hadc1);
   HAL_ADC_Start(&hadc2);
   LCD_init(1,1);
   /* USER CODE END 2 */
@@ -134,12 +134,29 @@ int main(void)
 
 	  //LCD_string("Mehet");
 	  LCD_goto(0,6);
-	  strtoINT(temp[0], sizeof(temp[0]));
+	  //temp_lcd = ((((3.3/4096)*temp[0])-0.76)/(2.5/1000))+25;
+	  //strtoINT(temp_lcd,sizeof(temp_lcd));
+	  //temp_lcd = ((3.3/4096)*temp[0]);
+	  //ftoa(temp[0],str_lcd,2);
+	  HAL_ADC_Start(&hadc1);
+
+	  temp_lcd = HAL_ADC_GetValue(&hadc1);
+	  //temp_lcd = ((3.3/4096)*temp_lcd);
+	  ftoa(temp_lcd,str_lcd,3);
+	  LCD_string(str_lcd);
+	  LCD_string(" ");
+	  //strtoINT(temp[0], sizeof(temp[0]));
 
 	  LCD_goto(1,6);
+
 	  //strtoINT(temp[1],sizeof(temp[1]));
+	  HAL_ADC_Start(&hadc2);
 	  temp_vin = HAL_ADC_GetValue(&hadc2);
-	  strtoINT(temp_vin,sizeof(temp_vin));
+	  temp_vin = ((3.3/4096)*temp_vin);
+
+	  //strtoINT(temp_vin,sizeof(temp_vin));
+	  ftoa(temp_vin,str_adc,2);
+	  LCD_string(str_adc);
 
 	  //LCD_string(temp[0]);
 	  /*temp_lcd = ((((3.3/4096)*temp[0])-0.76)/(2.5/1000)+25);
@@ -191,6 +208,12 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	 /* if((HAL_GPIO_ReadPin(gomb_in_GPIO_Port, gomb_in_Pin) == 0) && !tmp_button){
+		  tmp_button = 1;
+		  HAL_GPIO_TogglePin(led_gomb_GPIO_Port,led_gomb_Pin);
+	  }else{
+		  tmp_button = 0;
+	  }*/
   }
   /* USER CODE END 3 */
 }
@@ -259,12 +282,12 @@ static void MX_ADC1_Init(void)
   /** Common config 
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 3;
+  hadc1.Init.NbrOfConversion = 1;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
@@ -274,23 +297,6 @@ static void MX_ADC1_Init(void)
   sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure Regular Channel 
-  */
-  sConfig.Channel = ADC_CHANNEL_8;
-  sConfig.Rank = ADC_REGULAR_RANK_2;
-  sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure Regular Channel 
-  */
-  sConfig.Channel = ADC_CHANNEL_9;
-  sConfig.Rank = ADC_REGULAR_RANK_3;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -498,22 +504,6 @@ static void MX_USART1_UART_Init(void)
 
 }
 
-/** 
-  * Enable DMA controller clock
-  */
-static void MX_DMA_Init(void) 
-{
-
-  /* DMA controller clock enable */
-  __HAL_RCC_DMA1_CLK_ENABLE();
-
-  /* DMA interrupt init */
-  /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-
-}
-
 /**
   * @brief GPIO Initialization Function
   * @param None
@@ -530,7 +520,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(led_0_GPIO_Port, led_0_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, led_0_Pin|led_gomb_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, led_1_Pin|led_2_Pin|led_3_Pin|led_4_Pin 
@@ -540,12 +530,18 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOB, LCD_E_Pin|LCD_DATA_4_Pin|LCD_DATA_5_Pin|LCD_DATA_6_Pin 
                           |LCD_DATA_7_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : led_0_Pin */
-  GPIO_InitStruct.Pin = led_0_Pin;
+  /*Configure GPIO pins : led_0_Pin led_gomb_Pin */
+  GPIO_InitStruct.Pin = led_0_Pin|led_gomb_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(led_0_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : gomb_in_Pin */
+  GPIO_InitStruct.Pin = gomb_in_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(gomb_in_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : led_1_Pin led_2_Pin led_3_Pin led_4_Pin 
                            led_5_Pin led_6_Pin led_IT_Pin LCD_RS_Pin */

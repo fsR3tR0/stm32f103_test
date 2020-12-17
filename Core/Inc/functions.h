@@ -12,5 +12,8 @@
 #include "lcd.h"
 
 void strtoINT(uint32_t number, int lenght);
+void ftoa(float n, char *res, int afterpoint);
+int intToStr(int x, char *str, int d);
+void reverse(char *str,int len);
 
 #endif /* INC_FUNCTIONS_H_ */
